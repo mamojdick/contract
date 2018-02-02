@@ -4,62 +4,17 @@
 # © 2015 Pedro M. Baeza <pedro.baeza@tecnativa.com>
 # © 2016 Carlos Dauden <carlos.dauden@tecnativa.com>
 # Copyright 2016-2017 LasLabs Inc.
+# Copyright 2018 Therp BV <https://therp.nl>.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import api, fields, models
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 from odoo.tools.translate import _
 
 
-class AccountAnalyticInvoiceLine(models.Model):
-    _name = 'account.analytic.invoice.line'
+class ContractLine(models.Model):
+    _name = 'contract.line'
     _order = "sequence,id"
-
-    product_id = fields.Many2one(
-        'product.product',
-        string='Product',
-        required=True,
-    )
-    analytic_account_id = fields.Many2one(
-        'account.analytic.account',
-        string='Analytic Account',
-        required=True,
-        ondelete='cascade',
-    )
-    name = fields.Text(
-        string='Description',
-        required=True,
-    )
-    quantity = fields.Float(
-        default=1.0,
-        required=True,
-    )
-    uom_id = fields.Many2one(
-        'product.uom',
-        string='Unit of Measure',
-        required=True,
-    )
-    price_unit = fields.Float(
-        'Unit Price',
-        required=True,
-    )
-    price_subtotal = fields.Float(
-        compute='_compute_price_subtotal',
-        digits=dp.get_precision('Account'),
-        string='Sub Total',
-    )
-    discount = fields.Float(
-        string='Discount (%)',
-        digits=dp.get_precision('Discount'),
-        help='Discount that is applied in generated invoices.'
-             ' It should be less or equal to 100',
-    )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        help="Sequence of the contract line when displaying contracts",
-    )
 
     @api.multi
     @api.depends('quantity', 'price_unit', 'discount')
@@ -74,6 +29,37 @@ class AccountAnalyticInvoiceLine(models.Model):
             else:
                 line.price_subtotal = subtotal
 
+    sequence = fields.Integer(
+        string="Sequence",
+        default=10,
+        help="Sequence of the contract line when displaying contracts")
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        string='Product',
+        required=True)
+    name = fields.Text(
+        string='Description',
+        required=True)
+    quantity = fields.Float(
+        default=1.0,
+        required=True)
+    uom_id = fields.Many2one(
+        comodel_name'product.uom',
+        string='Unit of Measure',
+        required=True)
+    price_unit = fields.Float(
+        'Unit Price',
+        required=True)
+    price_subtotal = fields.Float(
+        compute='_compute_price_subtotal',
+        digits=dp.get_precision('Account'),
+        string='Sub Total')
+    discount = fields.Float(
+        string='Discount (%)',
+        digits=dp.get_precision('Discount'),
+        help='Discount that is applied in generated invoices.'
+             ' It should be less or equal to 100')
+
     @api.multi
     @api.constrains('discount')
     def _check_discount(self):
@@ -87,7 +73,6 @@ class AccountAnalyticInvoiceLine(models.Model):
     def _onchange_product_id(self):
         if not self.product_id:
             return {'domain': {'uom_id': []}}
-
         vals = {}
         domain = {'uom_id': [
             ('category_id', '=', self.product_id.uom_id.category_id.id)]}

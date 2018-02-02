@@ -6,10 +6,31 @@
 Contracts for recurrent invoicing
 =================================
 
-This module forward-port to v10 the contracts management with recurring
-invoicing functions. Also you can print and send by email contract report.
+This module re-implements recurring invoices as contracts.
 
-In upstream Odoo, this functionality was moved into the Enterprise edition.
+Contracts can be open-ended or for a limited amount of time.
+
+For the duration of the contract invoices can be created. How often an
+invoice is created is defined in the contract.
+
+When a contract is changed regularly, it is possible to create a base
+contract, that will have changing versions under it.
+
+You can base contract on a template. A template is just a contract that is
+not linked to a partner, and has no start or end date. A template is used
+to ease the creation of a contract, and has no effect on the contract once
+it has been created.
+
+Contract lines contain the products that will be delivered as part of the
+contract, with their amounts, prices and possible discounts.
+
+Once invoiced, contract lines are "frozen" and can only be changed creating
+a new contract version. Although the invoices lines created for contract
+lines can have updated prices, if the contract is related to a pricelist or
+an index.
+
+In upstream Odoo, the recurrent invoicing functionality was moved into the
+Enterprise edition.
 
 Configuration
 =============

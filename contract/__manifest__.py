@@ -5,16 +5,17 @@
 # Copyright 2016-2017 Tecnativa - Carlos Dauden
 # Copyright 2017 Tecnativa - Vicent Cubells
 # Copyright 2016-2017 LasLabs Inc.
+# Copyright 2018 Therp BV <https://therp.nl>.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 {
-    'name': 'Contracts Management - Recurring',
-    'version': '10.0.3.3.0',
+    'name': 'Contract Management',
+    'version': '10.0.4.0.0',
     'category': 'Contract Management',
     'license': 'AGPL-3',
     'author': "OpenERP SA, "
               "Tecnativa, "
               "LasLabs, "
+              "Therp BV, "
               "Odoo Community Association (OCA)",
     'website': 'https://github.com/oca/contract',
     'depends': ['base', 'account', 'analytic'],
@@ -25,8 +26,7 @@
         'report/contract_views.xml',
         'data/contract_cron.xml',
         'data/mail_template.xml',
-        'views/account_analytic_account_view.xml',
-        'views/account_analytic_contract_view.xml',
+        'views/contract.xml',
         'views/account_invoice_view.xml',
         'views/res_partner_view.xml',
     ],
