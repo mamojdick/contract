@@ -11,3 +11,9 @@ class AccountInvoice(models.Model):
     contract_id = fields.Many2one(
         'contract',
         string='Contract')
+    date_start = fields.Date(
+        string='Date Start',
+        help="Start date of the invoiced period")
+    date_end = fields.Date(
+        string='Date End',
+        help="End date of the invoiced period")
