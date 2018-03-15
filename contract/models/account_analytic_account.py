@@ -63,29 +63,6 @@ class AccountAnalyticAccount(models.Model):
                 contract.recurring_next_date <= contract.date_end
             )
 
-    @api.onchange('contract_template_id')
-    def _onchange_contract_template_id(self):
-        """Update the contract fields with that of the template.
-
-        Take special consideration with the `recurring_invoice_line_ids`,
-        which must be created using the data from the contract lines. Cascade
-        deletion ensures that any errant lines that are created are also
-        deleted.
-        """
-        contract = self.contract_template_id
-        if not contract:
-            return
-        for field_name, field in contract._fields.iteritems():
-            if field.name == 'recurring_invoice_line_ids':
-                lines = self._convert_contract_lines(contract)
-                self.recurring_invoice_line_ids = lines
-            elif not any((
-                field.compute, field.related, field.automatic,
-                field.readonly, field.company_dependent,
-                field.name in self.NO_SYNC,
-            )):
-                self[field_name] = self.contract_template_id[field_name]
-
     @api.onchange('date_start')
     def _onchange_date_start(self):
         if self.date_start:
@@ -139,16 +116,6 @@ class AccountAnalyticAccount(models.Model):
                     _("Contract '%s' start date can't be later than end date")
                     % contract.name
                 )
-
-    @api.multi
-    def _convert_contract_lines(self, contract):
-        self.ensure_one()
-        new_lines = []
-        for contract_line in contract.recurring_invoice_line_ids:
-            vals = contract_line._convert_to_write(contract_line.read()[0])
-            new_lines.append((0, 0, vals))
-        return new_lines
-
     @api.model
     def get_relative_delta(self, recurring_rule_type, interval):
         if recurring_rule_type == 'daily':

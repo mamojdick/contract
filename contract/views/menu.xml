@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_contract" model="ir.actions.act_window">
+        <field name="name">Contracts</field>
+        <field name="res_model">contract</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_not_finished':1, 'search_default_template':0, 'default_template': 0}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a new contract.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_action_contract"
+        parent="account.menu_finance_receivables"
+        action="action_contract"
+        sequence="99"
+        />
+
+    <menuitem
+        id="menu_config_contract"
+        name="Contracts"
+        sequence="1"
+        parent="account.menu_finance_configuration"
+        />
+
+    <record id="action_contract_template" model="ir.actions.act_window">
+        <field name="name">Contract templates</field>
+        <field name="res_model">contract</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_template':1, 'default_template': 1}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a new contract template.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_contract_template"
+        parent="menu_config_contract"
+        action="contract_template_action"
+        sequence="1"
+        />
+
+</odoo>

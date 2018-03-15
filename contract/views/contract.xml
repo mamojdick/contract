@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="contract_form" model="ir.ui.view">
+        <field name="name">Contract form</field>
+        <field name="model">contract</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <form string="Contract">
+                <header>
+                    <div name="button_box" >
+                        <button
+                            name="action_contract_send"
+                            type="object"
+                            string="Send by Email"
+                            groups="base.group_user"
+                            />
+                        <button
+                            name="recurring_create_invoice"
+                            type="object"
+                            attrs="{'invisible': ['|', ('template', '!=', True), ('create_invoice_visibility', '=', False)]}"
+                            string="Create invoices"
+                            class="oe_link"
+                            groups="base.group_no_one"
+                            />
+                        <button
+                            name="contract.act_template"
+                            type="action"
+                            attrs="{'invisible': [('template','!=',True)]}"
+                            string="⇒ Show recurring invoices"
+                            class="oe_link"
+                            />
+                    </div>
+                </header>
+                <group name="main">
+                    <field name="name"/>
+                    <field name="template"/>
+                    <group
+                        name="contract_data"
+                        string="Contract data"
+                        attrs="{'invisible': [('template', '=', True)]}">
+                        <field
+                            name="partner_id"
+                            attrs="{'required': [('template', '=', False)]}" />
+                        <field
+                            name="date_start"
+                            attrs="{'required': [('template', '=', True)]}"
+                            />
+                        <field name="date_end"/>
+                    </group>
+                    <group
+                        col="4"
+                        attrs="{'invisible': [('template','!=',True)]}"
+                        string="Invoicing">
+                        <field name="pricelist_id"/>
+                        <label for="recurring_interval"/>
+                        <div>
+                            <field
+                                name="recurring_interval"
+                                class="oe_inline"
+                                attrs="{'required': [('template', '=', True)]}"
+                                />
+                            <field
+                                name="recurring_rule_type"
+                                class="oe_inline"
+                                attrs="{'required': [('template', '=', True)]}"
+                                />
+                        </div>
+                        <field
+                            name="recurring_invoicing_type"
+                            attrs="{'required': [('template', '=', True)]}"
+                            />
+                        <field
+                            name="recurring_next_date"
+                            attrs="{'required': [('template', '=', True)]}"
+                            />
+                    </group>
+                    <label
+                        for="recurring_invoice_line_ids"
+                        attrs="{'invisible': [('template','=',False)]}"
+                        />
+                    <div attrs="{'invisible': [('template','=',False)]}">
+                        <field name="recurring_invoice_line_ids">
+                            <tree
+                                string="Account Analytic Lines"
+                                editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="quantity"/>
+                                <field name="uom_id"/>
+                                <field name="price_unit"/>
+                                <field
+                                    name="discount"
+                                    groups="sale.group_discount_per_so_line"
+                                    />
+                                <field name="price_subtotal"/>
+                            </tree>
+                        </field>
+                    </div>
+                    <group
+                        string="Legend (for the markers inside invoice lines description)"
+                        name="group_legend"
+                        attrs="{'invisible': [('template','!=',True)]}"
+                        >
+                        <p colspan="2">
+                            <strong>#START#</strong>: Start date of the invoiced period</p>
+                        <p colspan="2">
+                            <strong>#END#</strong>: End date of the invoiced period</p>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- list for contracts -->
+    <record id="contract_tree" model="ir.ui.view">
+        <field name="name">Contract list</field>
+        <field name="model">contract</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="name" />
+            <field name="partner_id" />
+            <field name="date_start" />
+            <field name="date_end" />
+            <field name="template" />
+            <field name="recurring_next_date"/>
+        </field>
+    </record>
+
+    <!-- search view for contract -->
+    <record id="contract_search" model="ir.ui.view">
+        <field name="name">Contract search</field>
+        <field name="model">contract</field>
+        <field name="arch" type="xml">
+            <field name="name" />
+            <field name="partner_id" />
+            <field name="date_start" />
+            <field name="date_end" />
+            <field name="template" />
+            <field name="recurring_next_date"/>
+            <separator/>
+            <filter
+                name="not_finished"
+                string="Valid"
+                domain="['|', ('date_end', '=', False), ('date_end', '&gt;=', time.strftime('%Y-%m-%d'))]"
+                />
+            <filter
+                name="finished"
+                string="Finished"
+                domain="[('date_end', '&lt;', time.strftime('%Y-%m-%d'))]"
+                />
+            <group expand="0" string="Group By...">
+                <filter
+                    string="Next Invoice"
+                    domain="[]"
+                    context="{'group_by':'recurring_next_date'}"
+                    />
+                <filter
+                    string="Date End"
+                    domain="[]"
+                    context="{'group_by':'date_end'}"
+                    />
+                </group>
+            </field>
+        </field>
+    </record>
+
+</odoo>

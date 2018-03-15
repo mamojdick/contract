@@ -13,10 +13,6 @@ class AccountAnalyticContract(models.Model):
     _name = 'account.analytic.contract'
 
     # These fields will not be synced to the contract
-    NO_SYNC = [
-        'name',
-    ]
-
     name = fields.Char(
         required=True,
     )
@@ -54,24 +50,9 @@ class AccountAnalyticContract(models.Model):
         string='Repeat Every',
         help="Repeat every (Days/Week/Month/Year)",
     )
-    journal_id = fields.Many2one(
-        'account.journal',
-        string='Journal',
-        default=lambda s: s._default_journal(),
-        domain="[('type', '=', 'sale'),('company_id', '=', company_id)]",
-    )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
         required=True,
         default=lambda self: self.env.user.company_id,
     )
-
-    @api.model
-    def _default_journal(self):
-        company_id = self.env.context.get(
-            'company_id', self.env.user.company_id.id)
-        domain = [
-            ('type', '=', 'sale'),
-            ('company_id', '=', company_id)]
-        return self.env['account.journal'].search(domain, limit=1)

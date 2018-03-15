@@ -18,7 +18,11 @@
               "Therp BV, "
               "Odoo Community Association (OCA)",
     'website': 'https://github.com/oca/contract',
-    'depends': ['base', 'account', 'analytic'],
+    'depends': [
+        'base',
+        'account',
+        'analytic'
+    ],
     'data': [
         'security/ir.model.access.csv',
         'security/contract_security.xml',
@@ -27,8 +31,9 @@
         'data/contract_cron.xml',
         'data/mail_template.xml',
         'views/contract.xml',
-        'views/account_invoice_view.xml',
-        'views/res_partner_view.xml',
+        'views/account_invoice.xml',
+        'views/res_partner.xml',
+        'views/menu.xml',
     ],
     'installable': True,
 }
