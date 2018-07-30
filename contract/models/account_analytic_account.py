@@ -5,7 +5,7 @@
 # Copyright 2016-2017 Carlos Dauden <carlos.dauden@tecnativa.com>
 # Copyright 2016-2017 LasLabs Inc.
 # Copyright 2018 Therp BV <https://therp.nl>.
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 # pylint: disable=no-member
 
 from dateutil.relativedelta import relativedelta
@@ -235,15 +235,17 @@ class AccountAnalyticAccount(models.Model):
             self.partner_id.property_product_pricelist.currency_id or
             self.company_id.currency_id
         )
+        name = self._insert_markers(self.invoice_name or self.name)
         invoice = self.env['account.invoice'].new({
-            'reference': self.code,
+            'reference': self.name,
+            'name': name,  # from invoice name or name
             'type': 'out_invoice',
             'partner_id': self.partner_id.address_get(
                 ['invoice'])['invoice'],
             'currency_id': currency.id,
             'journal_id': journal.id,
             'date_invoice': self.recurring_next_date,
-            'origin': self.name,
+            'origin': self.code,
             'company_id': self.company_id.id,
             'contract_id': self.id,
             'user_id': self.partner_id.user_id.id,

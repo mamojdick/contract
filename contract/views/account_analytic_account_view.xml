@@ -8,6 +8,9 @@
         <field name="mode">primary</field>
         <field name="priority" eval="9999"/>
         <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="invoice_name"/>
+            </field>
             <field name="partner_id" position="attributes">
                 <attribute name="attrs">{'required': [('recurring_invoices', '=', True)]}</attribute>
             </field>

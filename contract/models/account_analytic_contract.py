@@ -15,11 +15,16 @@ class AccountAnalyticContract(models.Model):
     # These fields will not be synced to the contract
     NO_SYNC = [
         'name',
+        'invoice_name',
         'partner_id',
     ]
 
     name = fields.Char(
         required=True,
+    )
+    invoice_name = fields.Char(
+        help="Used to set the name of the invoice.\n"
+             " You can use the #START# and #END# markers also here.",
     )
     # Needed for avoiding errors on several inherited behaviors
     partner_id = fields.Many2one(

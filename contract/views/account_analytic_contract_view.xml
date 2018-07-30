@@ -8,6 +8,7 @@
             <form string="Contract Template">
                 <group name="group_main">
                     <field name="name" />
+                    <field name="invoice_name"/>
                     <group name="group_main_left">
                         <field name="journal_id" />
                         <field name="pricelist_id" />
