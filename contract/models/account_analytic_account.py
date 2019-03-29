@@ -237,11 +237,17 @@ class AccountAnalyticAccount(models.Model):
             self.partner_id.property_product_pricelist.currency_id or
             self.company_id.currency_id
         )
+# different address for invoce and delivery
+        shipping_id = (
+            self.partner_id.address_get(['delivery'])['delivery'] or
+            self.partner_id.address_get(['invoice'])['invoice']
+        )
         invoice = self.env['account.invoice'].new({
             'reference': self.code,
             'type': 'out_invoice',
             'partner_id': self.partner_id.address_get(
                 ['invoice'])['invoice'],
+            'partner_shipping_id': shipping_id,
             'currency_id': currency.id,
             'journal_id': journal.id,
 # Rimosso per inserire in automatico la data di validazione
