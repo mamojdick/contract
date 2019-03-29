@@ -4,7 +4,7 @@
 # Copyright 2015 Pedro M. Baeza <pedro.baeza@tecnativa.com>
 # Copyright 2016-2017 Carlos Dauden <carlos.dauden@tecnativa.com>
 # Copyright 2016-2017 LasLabs Inc.
-# Copyright 2018-2019 Therp BV <https://therp.nl>.
+# Copyright 2018 Therp BV <https://therp.nl>.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 # pylint: disable=no-member
 
@@ -244,8 +244,6 @@ class AccountAnalyticAccount(models.Model):
                 ['invoice'])['invoice'],
             'currency_id': currency.id,
             'journal_id': journal.id,
-# Rimosso per inserire in automatico la data di validazione
-#            'date_invoice': self.recurring_next_date,
             'origin': self.name,
             'company_id': self.company_id.id,
             'contract_id': self.id,
