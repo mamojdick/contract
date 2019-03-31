@@ -16,6 +16,25 @@ Configuration
 
 To view discount field set *Discount on lines* in user access rights.
 
+You might find that generating all pending invoices at once takes too much
+time and produces some performance problems, mostly in cases where you
+generate a lot of invoices in little time (i.e. when invoicing thousands
+of contracts yearly, and you get to January 1st of the next year). To avoid
+this bottleneck, the trick is to **increase the cron frequence and decrease
+the contracts batch size**. The counterpart is that some invoices could not
+be generated in the exact day you expected. To configure that:
+
+#. Go to *Settings > Activate the developer mode*.
+#. Go to *Settings > Technical > Automation > Scheduled Actions >
+   Generate Recurring Invoices from Contracts > Edit > Information*.
+#. Set a lower interval. For example, change *Interval Unit* to *Hours*.
+#. Go to the *Technical Data* tab, and add a batch size in *Arguments*.
+   For example, it should look like ``(20,)``.
+#. Save.
+
+That's it! From now on, only 20 invoices per hour will be generated.
+That should take only a few seconds each hour, and shouln't block other users.
+
 Usage
 =====
 
@@ -33,6 +52,8 @@ To use this module, you need to:
    * Invoicing type: pre-paid or post-paid.
 #. Add the lines to be invoiced with the product, description, quantity and
    price.
+#. You can mark Auto-price? for having a price automatically obtained applying
+   the pricelist to the product price.
 #. You have the possibility to use the markers #START# or #END# in the
    description field to show the start and end date of the invoiced period.
 #. Choosing between pre-paid and post-paid, you modify the dates that are shown
