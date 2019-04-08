@@ -232,6 +232,15 @@ class AccountAnalyticAccount(models.Model):
             raise ValidationError(
                 _("Please define a sale journal for the company '%s'.") %
                 (self.company_id.name or '',))
+
+# set x_invoice_period
+        context = self.env.context if 'date_format' in self.env.context \
+            else self.get_invoice_context()
+        date_format = context.get('date_format', '%m/%d/%Y')
+        date_from = context['date_from']
+        date_to = context['date_to']
+        x_invoice_period = date_from.strftime("%B") + " - " + date_to.strftime("%B")
+
         currency = (
             self.pricelist_id.currency_id or
             self.partner_id.property_product_pricelist.currency_id or
@@ -256,6 +265,9 @@ class AccountAnalyticAccount(models.Model):
             'company_id': self.company_id.id,
             'contract_id': self.id,
             'user_id': self.partner_id.user_id.id,
+
+            'x_invoice_period': x_invoice_period,
+
         })
         # Get other invoice values from partner onchange
         invoice._onchange_partner_id()
