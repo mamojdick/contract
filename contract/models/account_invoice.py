@@ -11,3 +11,8 @@ class AccountInvoice(models.Model):
     contract_id = fields.Many2one(
         'account.analytic.account',
         string='Contract')
+    
+    x_invoiced_period = fields.Char(
+        string="Invoiced Period",
+        required=False,
+    )
