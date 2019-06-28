@@ -4,15 +4,17 @@
 # Copyright 2015 Pedro M. Baeza <pedro.baeza@tecnativa.com>
 # Copyright 2016-2017 Carlos Dauden <carlos.dauden@tecnativa.com>
 # Copyright 2016-2017 LasLabs Inc.
-# Copyright 2018 Therp BV <https://therp.nl>.
+# Copyright 2018-2019 Therp BV <https://therp.nl>.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 # pylint: disable=no-member
 
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.translate import _
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class AccountAnalyticAccount(models.Model):
@@ -235,14 +237,21 @@ class AccountAnalyticAccount(models.Model):
             self.partner_id.property_product_pricelist.currency_id or
             self.company_id.currency_id
         )
+# different address for invoce and delivery
+        shipping_id = (
+            self.partner_id.address_get(['delivery'])['delivery'] or
+            self.partner_id.address_get(['invoice'])['invoice']
+        )
         invoice = self.env['account.invoice'].new({
             'reference': self.code,
             'type': 'out_invoice',
             'partner_id': self.partner_id.address_get(
                 ['invoice'])['invoice'],
+            'partner_shipping_id': shipping_id,
             'currency_id': currency.id,
             'journal_id': journal.id,
-            'date_invoice': self.recurring_next_date,
+# Rimosso per inserire in automatico la data di validazione
+#            'date_invoice': self.recurring_next_date,
             'origin': self.name,
             'company_id': self.company_id.id,
             'contract_id': self.id,
@@ -341,14 +350,28 @@ class AccountAnalyticAccount(models.Model):
 
     @api.model
     def cron_recurring_create_invoice(self, limit=None):
-        today = fields.Date.today()
-        contracts = self.with_context(cron=True).search([
-            ('recurring_invoices', '=', True),
-            ('recurring_next_date', '<=', today),
-            '|',
-            ('date_end', '=', False),
-            ('date_end', '>=', today),
-        ])
+        """Generate invoices.
+
+        Invoices can be generated a specified number of days before the
+        invoice date, to allow the user to check the invoices before
+        confirmation, or to send out the invoices to the customers before
+        the invoice date.
+        """
+        today = datetime.today()
+        company_model = self.env['res.company']
+        for company in company_model.search([]):
+            days_before = company.contract_pregenerate_days or 0
+            cutoffdate = (
+                today + relativedelta(days=days_before)
+            ).strftime(DEFAULT_SERVER_DATE_FORMAT)
+            contracts = self.with_context(cron=True).search([
+                ('company_id', '=', company.id),
+                ('recurring_invoices', '=', True),
+                ('recurring_next_date', '<=', cutoffdate),
+                '|',
+                ('date_end', '=', False),
+                ('date_end', '>=', cutoffdate),
+            ])
         return contracts.recurring_create_invoice(limit)
 
     @api.multi
